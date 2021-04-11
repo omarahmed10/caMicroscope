@@ -632,6 +632,12 @@ async function initUIcomponents() {
         text: 'delete_forever',
         callback: annoDelete,
       },
+      { // fix
+        title: 'Fix',
+        class: 'material-icons',
+        text: 'auto_fix_high',
+        callback:annoFix
+      }
     ],
   });
 

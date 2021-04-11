@@ -766,6 +766,61 @@ function annoDelete(data, parentType) {
 }
 
 /**
+ * Fixes the annotation with given data
+ * @param {Object} data
+ */
+function annoFix(data, parentType) {
+  if (!data.id) return;
+
+
+  const annotationData = $D.humanlayers.find(
+      (d) => d.data && d.data._id.$oid == data.oid,
+  );
+  let message;
+  if (annotationData.data.geometries) {
+    message = `Are You Sure You Want To edit This Annotation {ID:${data.id}} With ${annotationData.data.geometries.features.length} Mark(s)?`;
+  } else {
+    message = `Are You Sure You Want To edit This Markup {ID:${data.id}}?`;
+  }
+  $UI.annotPopup.close();
+  if (!confirm(message)) return;
+
+  $CAMIC.store
+  .fixMark(data.oid, $D.params.data.slide)
+  .then((datas) => {
+  // server error
+    if (datas.error) {
+      const errorMessage = `${datas.text}: ${datas.url}`;
+      $UI.message.addError(errorMessage, 4000);
+      // close
+      return;
+    }
+
+    // no data found
+    if (!datas.deletedCount || datas.deletedCount < 1) {
+      $UI.message.addWarning(`Fix Annotations Failed.`, 4000);
+      return;
+    }
+
+    const index = $D.humanlayers.findIndex((layer) => layer.id == data.id);
+
+    if (index == -1) return;
+
+    data.index = index;
+    const layer = $D.humanlayers[data.index];
+    // update UI
+
+  })
+  .catch((e) => {
+    $UI.message.addError(e);
+    console.error(e);
+  })
+  .finally(() => {
+    console.log('Fix Annotations end');
+  });
+}
+
+/**
  * Callback for deleting annotation
  * @param {Object} data
  */

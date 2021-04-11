@@ -232,6 +232,26 @@ class Store {
       body: JSON.stringify(json),
     }).then(this.errorHandler);
   }
+
+  /**
+   * fix mark
+   * @param {object} json - the mark data
+   * @return {promise} - promise which resolves with response
+   **/
+   fixMark(id, slide) {
+    const suffix = 'Mark/fix';
+    const url = this.base + suffix;
+    const query = {
+      '_id': id,
+      'provenance.image.slide': slide,
+    };
+    return fetch(url + '?' + objToParamStr(query), {
+      method: 'POST',
+      credentials: 'include',
+      mode: 'cors',
+    }).then(this.errorHandler);
+  }
+  
   /**
    * delete mark
    * @param {object} id - the mark object id
